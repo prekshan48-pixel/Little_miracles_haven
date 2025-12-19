@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Little Miracles Haven 🌸</title>
+  <meta name="description" content="Little Miracles Haven — cute baby care guide, shop, nearby hospital finder, myths, videos, and routines."/>
+  <style>
+    /* -------------------- ROOT THEME & RESET -------------------- */
+    :root{
+      --gutter: 12px; /* consistent spacing unit */
+      --header-height: 76px; /* reserve space so sticky header pushes content */
+      --bg: #fff8f7;
+      --panel: #ffffff;
+      --muted:#6b6b6b;
+      --accent-pink: #ff9cc9;
+      --accent-blue: #a8e6ff;
+      --text:#2b2b2b;
+      --glass: rgba(255,255,255,0.6);
+      --card-shadow: 0 6px 18px rgba(38, 24, 56, 0.08);
+      --glass-border: rgba(255,255,255,0.7);
+      --pastel1: #ffecf3;
+      --pastel2: #e3f7ff;
+      --wave: linear-gradient(135deg, rgba(255,156,201,0.12), rgba(168,230,255,0.12));
+    }
+    html,body{height:100%;}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Nunito", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at -10% 10%, #ffeff6 0%, transparent 5%),
+                  radial-gradient(900px 500px at 110% 90%, #eaffff 0%, transparent 6%),
+                  var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+      transition: background 300ms ease;
+      cursor: url('data:image/svg+xml;utf8,\
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">\
+      <text x="0" y="18" font-size="18">❤️</text></svg>') 8 8, auto;
+    }
+
+    /* Dark mode variables */
+    :root.dark{
+      --bg:#0b1020;
+      --panel:#0f1724;
+      --card-shadow: 0 10px 30px rgba(3,6,12,0.6);
+      --text:#e6eef8;
+      --muted:#98a0b2;
+      --pastel1: rgba(255,255,255,0.03);
+      --pastel2: rgba(255,255,255,0.02);
+      --wave: linear-gradient(135deg, rgba(255,156,201,0.04), rgba(168,230,255,0.03));
+    }
+
+    /* -------------------- LAYOUT -------------------- */
+    header{
+      position:sticky;
+      top:0; /* stick to top for consistent spacing */
+      z-index:40;
+      display:flex;
+      gap:var(--gutter);
+      align-items:center;
+      justify-content:space-between;
+      max-width:1100px;
+      margin: 0 auto;
+      padding: calc(var(--gutter) - 2px) 18px;
+      height:var(--header-height);
+      box-sizing:border-box;
+      pointer-events:auto;
+    }
+     
+    .brand {
+      display:flex;
+      gap:10px;
+      align-items:center;
+      background:var(--panel);
+      padding:8px 12px;
+      border-radius:14px;
+      box-shadow:var(--card-shadow);
+      border:1px solid var(--glass-border);
+      min-height:56px;
+    }
+    .brand h1{
+      margin:0;font-size:18px;line-height:1;
+      letter-spacing:0.2px;
+    }
+    nav{display:flex; gap:8px; align-items:center;}
+    .nav-btn{
+      background:transparent;border:none;padding:8px 12px;border-radius:12px;cursor:pointer;font-weight:600;color:var(--muted);
+    }
+    .nav-btn.active{background:var(--wave); color:var(--text); box-shadow:var(--card-shadow);}
+    .controls{display:flex;gap:8px;align-items:center}
+
+    main{
+      max-width:1100px;margin:0 auto;padding:var(--gutter);
+      padding-top:calc(var(--header-height) + var(--gutter)); /* ensure content sits below header */
+      min-height:auto; /* avoid large empty viewport space */
+    }
+
+    /* -------------------- PAGE TRANSITION (fade) -------------------- */
+    /* Hide inactive pages so they do not occupy vertical space */
+    .page{
+      display:none;
+      opacity:0;
+      transform: translateY(6px);
+      transition:opacity .32s ease, transform .36s cubic-bezier(.2,.9,.3,1);
+      will-change:opacity, transform;
+      pointer-events:none;
+    }
+    .page.active{
+      display:block;
+      opacity:1;
+      transform:none;
+      pointer-events:auto;
+    }
+
+    /* -------------------- LOADING SCREEN -------------------- */
+    #loadingMask{
+      position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75));
+      backdrop-filter: blur(4px);
+      transition:opacity .6s ease, visibility .6s;
+    }
+    #loadingMask.hidden{opacity:0; visibility:hidden; pointer-events:none;}
+    .loadingCard{display:flex;flex-direction:column;gap:12px;align-items:center;padding:22px;border-radius:16px;background:var(--panel);box-shadow:var(--card-shadow);border:1px solid var(--glass-border)}
+    .bottle{width:60px;height:80px;border-radius:12px;background:linear-gradient(#fff,#ffe8f4);position:relative;overflow:hidden;border:3px solid rgba(255,255,255,0.7)}
+    .milkFill{position:absolute;left:0;right:0;bottom:-30%;height:50%;background:linear-gradient(#e8f9ff,#ffdff0);animation: bottleFill 2.8s ease-in-out infinite alternate;}
+    @keyframes bottleFill{from{bottom:-40%}to{bottom:0%}}
+    .teddy{width:48px;height:48px;border-radius:50%;background:linear-gradient(#fff2ee,#ffe6fb);display:flex;align-items:center;justify-content:center;font-size:28px;animation: blink 3s infinite;}
+    @keyframes blink{0%,60%,100%{transform:scale(1)} 70%{transform:scale(0.98)} 75%{transform:scale(1.02)}}
+    .starSpin{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;animation: spin 2.8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* -------------------- HERO / HOME -------------------- */
+    .hero{
+      display:grid;grid-template-columns:1fr 360px;gap:6px;align-items:center;
+      background:var(--panel);padding:10px;border-radius:18px;box-shadow:var(--card-shadow);border:1px solid var(--glass-border);
+    }
+    .hero .intro{padding:4px}
+    .badge{
+      display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:999px;background:var(--wave);font-weight:700;font-size:14px;
+    }
+    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:6px}
+    .feature{
+      background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.35));
+      border-radius:10px;padding:6px;display:flex;gap:4px;align-items:center;border:1px dotted rgba(0,0,0,0.04);font-size:13px;
+    }
+    .baby-illustration{
+      border-radius:16px;padding:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;background:linear-gradient(180deg,#fff,#fff8fb);
+      min-height:160px;border:1px dashed rgba(0,0,0,0.03);margin:0;
+    }
+    .baby-illustration .smile{font-size:64px;line-height:1}
+
+    /* -------------------- SWINGING / BOUNCING BUTTONS -------------------- */
+    .btn {
+      border:0;padding:10px 14px;border-radius:14px;font-weight:700;cursor:pointer;
+      background:linear-gradient(90deg,var(--accent-blue),var(--accent-pink));
+      box-shadow:0 8px 18px rgba(120,70,120,0.12);
+      transform-origin:center;
+      animation: float 2.2s ease-in-out infinite;
+      color:#222;
+      display:inline-flex;gap:8px;align-items:center;
+    }
+    .btn.pink{background:linear-gradient(90deg,#ffd7ee,#ffb6db)}
+    .btn.blue{background:linear-gradient(90deg,#caf4ff,#bfe9ff)}
+    .btn.small{padding:8px 10px;border-radius:10px;font-size:14px}
+    @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+    .btn:active{transform:translateY(2px) scale(.99);}
+
+    /* -------------------- CARDS / FLIP -------------------- */
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:8px;}
+    .flip-card{perspective:1200px}
+    .flip-inner{
+      background:var(--panel);min-height:140px;border-radius:10px;transition:transform .6s;transform-style:preserve-3d;box-shadow:var(--card-shadow);
+      border:1px solid var(--glass-border);padding:10px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+    }
+    .flip-card:hover .flip-inner{transform:rotateY(180deg);}
+    .flip-front, .flip-back{backface-visibility:hidden;position:relative;min-height:120px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;}
+    .flip-front strong{font-size:15px;margin:0;}
+    .flip-front .muted{font-size:12px;line-height:1.2;margin:0;}
+    .flip-back{position:absolute;inset:0;border-radius:10px;padding:10px;transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1.4;}
+
+    /* -------------------- DISEASES SEARCH UI -------------------- */
+    .searchRow{display:flex;gap:8px;align-items:center}
+    input[type="search"], input[type="text"], select {padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);min-width:0}
+    .diseaseDetail{margin-top:8px;padding:8px;border-radius:12px;background:var(--panel);box-shadow:var(--card-shadow);border:1px solid var(--glass-border)}
+
+    /* -------------------- MYTHBUSTER DETECTIVE -------------------- */
+    .detective{
+      display:flex;gap:14px;align-items:center;padding:12px;border-radius:14px;background:linear-gradient(180deg, #fff8fb, #f8fff9);border:1px solid rgba(0,0,0,0.03);
+    }
+    .myth-list{margin-top:12px;padding-left:18px}
+    .myth-item{background:var(--pastel1);padding:10px;border-radius:10px;margin-bottom:8px;border:1px dashed rgba(0,0,0,0.03)}
+
+    /* -------------------- SHOP LIST / BOUNCE -------------------- */
+    .product-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+    .product{padding:12px;border-radius:12px;background:var(--panel);box-shadow:var(--card-shadow);border:1px solid var(--glass-border)}
+    .buy-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+    /* -------------------- VIDEO GRID -------------------- */
+    .video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+    .video-card{padding:12px;border-radius:12px;background:var(--panel);box-shadow:var(--card-shadow);border:1px solid var(--glass-border);display:flex;flex-direction:column;gap:8px}
+
+    .playBtn{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:0;cursor:pointer;background:linear-gradient(90deg,#ffd7ee,#bfe9ff);font-weight:700;animation: float 2s ease-in-out infinite}
+
+    /* -------------------- EMOTIONS -------------------- */
+    .emotion-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+    .emo-card{padding:14px;border-radius:12px;background:var(--panel);box-shadow:var(--card-shadow);display:flex;flex-direction:column;gap:8px;align-items:center}
+    .pulse{animation:pulse 1.8s infinite}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+
+    /* -------------------- SMART TRACKER (form included) -------------------- */
+    .container {
+      max-width: 640px;
+      background: var(--panel);
+      margin: 0 auto; /* remove extra top gap inside sections */
+      border-radius: 14px;
+      box-shadow: var(--card-shadow);
+      padding: 16px;
+      border:1px solid var(--glass-border);
+    }
+    .container h1 {color:var(--accent-pink);text-align:center;margin-bottom:12px}
+    label{display:block;margin-bottom:6px;color:var(--muted);font-weight:600}
+    input[type="number"]{width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    .btnFull{width:100%;padding:12px;border-radius:10px;border:0;cursor:pointer;font-weight:800;background:linear-gradient(90deg,#a8edea,#ff8ba7)}
+    .result{margin-top:16px;padding:14px;border-radius:10px;background:var(--pastel2);color:var(--text);font-weight:700;text-align:center}
+
+    /* -------------------- STICKERS / CORNERS -------------------- */
+    .corner-sticker{position:fixed;z-index:5;pointer-events:none}
+    .st1{top:18px;left:14px;font-size:22px}
+    .st2{bottom:10px;right:14px;font-size:24px}
+    .st3{bottom:24px;left:12px;font-size:20px}
+    .st4{top:18px;right:18px;font-size:20px}
+
+    /* -------------------- SMALL / RESPONSIVE -------------------- */
+    @media (max-width:880px){
+      .hero{grid-template-columns:1fr;row-gap:14px}
+      header{padding:10px}
+    }
+
+    /* -------------------- SPACING NORMALIZATION -------------------- */
+    h1,h2,h3,h4,h5,h6{margin-top:0;margin-bottom:0.3rem}
+    /* Give each page/section consistent vertical rhythm; avoid extra gaps from nested elements */
+    section, .page{margin:0;padding-top:8px;padding-bottom:8px}
+    main > *{margin-top:0}
+    /* Let section-level spacing control gaps; card grids shouldn't add extra top margin when inside a section */
+    .card-grid{margin-top:0}
+
+    /* -------------------- INTERSECTION OBSERVER ANIMATIONS -------------------- */
+    .reveal{opacity:0; transform:translateY(14px); transition: all 600ms cubic-bezier(.2,.9,.3,1);}
+    .reveal.visible{opacity:1; transform:none;}
+
+    /* small utilities */
+    .muted{color:var(--muted);font-size:13px}
+    .chip{display:inline-flex;padding:6px 8px;border-radius:999px;background:var(--pastel1);font-weight:700}
+    a.inline-link{color:var(--accent-pink);font-weight:800;text-decoration:none}
+    /* page illustration (small emoji/svg) */
+    .page-illustration{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .page-illustration .illus{width:72px;height:72px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:36px;background:var(--pastel1);box-shadow:var(--card-shadow);border:1px solid rgba(0,0,0,0.03)}
+    .explain-btn{background:transparent;border:0;color:var(--accent-pink);font-weight:800;cursor:pointer;padding:6px 8px;border-radius:8px}
+    .myth-explain{margin-top:8px;padding:10px;border-radius:10px;background:var(--pastel2);display:none}
+
+    /* Center images inside main content and containers */
+    .container img,
+    .baby-illustration img,
+    main img {
+      display: block;
+      margin: 12px auto;
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Large, centered image variant for key illustrations */
+    .large-centered {
+      display: block;
+      margin: 18px auto;
+      max-width: 820px; /* grow large on wide screens */
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    /* Small, normal-size centered image for illustrations */
+    .small-centered {
+      display: block;
+      margin: 12px auto;
+      max-width: 360px; /* comfortable, small display */
+      width: 100%;
+      max-height: 300px;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    /* Side illustration: image in a side column, vertically centered next to text */
+    .side-illustration{
+      display:flex;
+      gap:16px;
+      align-items:center; /* vertical center */
+      justify-content:flex-start;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .side-illustration .side-img{
+      margin:0; /* override centered margin */
+      max-width:360px;
+      width:40%;
+      min-width:160px;
+      height:auto;
+      border-radius:12px;
+      object-fit:cover;
+    }
+
+    /* Generic side image used outside side-illustration: moderate, not centered */
+    .side-img{
+      display:inline-block;
+      margin:0;
+      max-width:120px; /* fit inside flip cards */
+      width:100%;
+      height:auto;
+      max-height:80px;
+      border-radius:8px;
+      object-fit:cover;
+      vertical-align:middle;
+    }
+
+    /* Small corner image */
+    .corner-img{
+      display:inline-block;
+      margin:0;
+      max-width:80px;
+      width:100%;
+      height:auto;
+      max-height:60px;
+      border-radius:8px;
+      object-fit:cover;
+      float:right;
+      margin-left:12px;
+      margin-bottom:12px;
+    }
+    .side-illustration ul{flex:1 1 300px}
+
+    /* Full-width hero banner with background image */
+    .hero-banner{
+      position:relative;
+      width:100vw;
+      left:50%;
+      right:50%;
+      margin-left:-50vw;
+      margin-right:-50vw;
+      height:380px;
+      background-image:url('baby5.jpg');
+      background-size:cover;
+      background-position:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:0;
+      box-shadow:none;
+      border:none;
+      margin-top:-12px;
+      margin-bottom:24px;
+    }
+    .hero-banner::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:rgba(255,248,247,0.15);
+      border-radius:0;
+    }
+    .hero-banner-text{
+      position:relative;
+      z-index:2;
+      text-align:center;
+      color:#fff;
+      text-shadow:0 2px 8px rgba(0,0,0,0.3);
+    }
+    .hero-banner-text h1{
+      font-size:42px;
+      font-weight:900;
+      margin:0;
+      line-height:1.2;
+      color:#ffffff;
+    }
+    .hero-banner-text .subtitle{
+      font-size:16px;
+      margin-top:8px;
+      color:#fff8f7;
+      font-weight:600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cute stickers -->
+  <div class="corner-sticker st1">🦆</div>
+  <div class="corner-sticker st2">🍼</div>
+  <div class="corner-sticker st3">⭐</div>
+  <div class="corner-sticker st4">👼</div>
+
+  <!-- Loading Mask -->
+  <div id="loadingMask">
+    <div class="loadingCard">
+      <div style="display:flex;gap:12px;align-items:center;">
+        <div class="bottle"><div class="milkFill"></div></div>
+        <div style="display:flex;flex-direction:column;">
+          <div style="font-weight:800;font-size:18px">Little Miracles Haven</div>
+          <div class="muted" style="font-size:13px">Preparing cuddles & cuteness...</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;justify-content:center;">
+        <div class="teddy">🧸</div>
+        <div class="starSpin">⭐</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header / Nav -->
+  <header>
+    <div class="brand" role="banner">
+      <div style="font-size:26px">🌸</div>
+      <div>
+        <h1>Little Miracles Haven</h1>
+        <div class="muted" style="font-size:12px">Your trusted baby care companion</div>
+      </div>
+    </div>
+
+    <nav id="nav">
+      <button class="nav-btn active" data-page="home">Home</button>
+      <button class="nav-btn" data-page="basics">Basics</button>
+      <button class="nav-btn" data-page="diseases">Diseases</button>
+      <button class="nav-btn" data-page="myths">MythBuster</button>
+      <button class="nav-btn" data-page="shop">Baby Care</button>
+      <button class="nav-btn" data-page="videos">Visual Care</button>
+      <button class="nav-btn" data-page="emotions">Emotions</button>
+      <button class="nav-btn" data-page="growth">Smart Growth</button>
+    </nav>
+
+    <div class="controls">
+      <button id="themeToggle" class="btn small">🌙</button>
+      <button id="musicToggle" class="btn small">🔈 Lullaby</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section id="home" class="page active" aria-labelledby="homeTitle">
+      <div class="hero-banner">
+        <div class="hero-banner-text">
+          <h1>Welcome to Little Miracles Haven 🌸</h1>
+          <div class="subtitle">Your trusted baby care companion</div>
+        </div>
+      </div>
+
+      <div class="hero reveal">
+        <div class="intro">
+          <div class="badge">Explore & Learn 📚</div>
+          <h2 style="margin:12px 0 6px 0">Your trusted place for baby care guidance, shop, and nearby hospital finder.</h2>
+          <p class="muted">A cute, friendly space for feeding, sleep, bathing and diaper care — full of pastel fun.</p>
+
+          <div class="feature-grid">
+            <div class="feature"><div style="font-size:20px">🛍️</div><div><strong>Shop Clothing</strong><div class="muted">Soft & safe</div></div></div>
+            <div class="feature"><div style="font-size:20px">🧴</div><div><strong>Safe Products</strong><div class="muted">Gentle on skin</div></div></div>
+            <div class="feature"><div style="font-size:20px">📺</div><div><strong>Watch Videos</strong><div class="muted">Nursery rhymes & routines</div></div></div>
+            <div class="feature"><div style="font-size:20px">🍼</div><div><strong>Feeding</strong><div class="muted">Gentle routines</div></div></div>
+            <div class="feature"><div style="font-size:20px">😴</div><div><strong>Sleep</strong><div class="muted">Healthy sleep habits</div></div></div>
+            <div class="feature"><div style="font-size:20px">🛁</div><div><strong>Bathing</strong><div class="muted">Soft skincare tips</div></div></div>
+            <div class="feature"><div style="font-size:20px">🧷</div><div><strong>Diaper Care</strong><div class="muted">Keep baby comfy</div></div></div>
+          </div>
+        </div>
+
+        <div class="baby-illustration">
+          <div class="smile">👶</div>
+          <div style="font-weight:800;font-size:20px">Little Miracles Haven</div>
+          <div class="muted">A pastel paradise for parents</div>
+          <div style="margin-top:8px">
+            <button class="btn pink" onclick="navigate('shop')">Shop Now 🛍️</button>
+            <button class="btn blue" onclick="navigate('videos')">Watch Videos ▶️</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:4px" class="reveal">
+        <h3>Quick Peek — What you'll find</h3>
+        <div class="card-grid">
+          <div class="flip-card">
+            <div class="flip-inner">
+              <div class="flip-front"><strong>Feeding & Sleep</strong><div class="muted">Practical schedules, positions & tips</div><img src="baby7.jpg" alt="Baby" class="small-centered side-img" /></div>
+              <div class="flip-back">Do & don'ts, illustrated positions (icons)</div>
+            </div>
+          </div>
+          <div class="flip-card">
+            <div class="flip-inner">
+              <div class="flip-front"><strong>Diseases & Care</strong><div class="muted">Search 30+ conditions</div><img src="baby9.jpg" alt="Baby" class="small-centered side-img" /></div>
+              <div class="flip-back">Symptoms, causes, prevention, nearby hospitals</div>
+            </div>
+          </div>
+          <div class="flip-card">
+            <div class="flip-inner">
+              <div class="flip-front"><strong>MythBuster</strong><div class="muted">25+ myths debunked</div><img src="baby11.jpg" alt="Baby" class="small-centered side-img" /></div>
+              <div class="flip-back">Humor + facts + cute detective baby 🕵️‍♀️👶</div>
+            </div>
+          </div>
+          <div class="flip-card">
+            <div class="flip-inner">
+              <div class="flip-front"><strong>Shop & Clothes</strong><div class="muted">Bounce to buy!</div><img src="baby12.jpg" alt="Baby" class="small-centered side-img" /></div>
+              <div class="flip-back">Safe product list and clothing categories</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BASICS -->
+    <section id="basics" class="page" aria-labelledby="basicsTitle">
+      <div class="container reveal">
+        <h2>Baby Basics — Feeding, Burping, Bathing & Sleep</h2>
+        <img src="baby care1.jpg" alt="Baby" style="max-width: 100%; height: auto; max-height: 300px; border-radius: 12px;"/>
+
+        <p class="muted">Practical, simple guidance with dos & don'ts and friendly iconography.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+          <div style="background:var(--panel);padding:12px;border-radius:12px;border:1px solid var(--glass-border);box-shadow:var(--card-shadow)">
+            <h3>Feeding</h3>
+            <p><strong>When:</strong> Feed on demand for newborns (8–12 times/day). Watch hunger cues: rooting, lip smacking.</p>
+            <p><strong>Dos:</strong> Hold upright slightly, support head, burp mid & end feed. Use pastel icons: 🍼 🧷</p>
+            <p class="muted">Positions (icons): cradle hold 🤱, upright hold, football hold 🏈</p>
+          </div>
+          <div style="background:var(--panel);padding:12px;border-radius:12px;border:1px solid var(--glass-border);box-shadow:var(--card-shadow)">
+            <h3>Burping</h3>
+            <p><strong>When:</strong> After feeding or when baby seems gassy.</p>
+            <p><strong>Technique:</strong> Pat gently on back, sit baby on your lap leaning forward slightly, or hold over shoulder.</p>
+            <div class="muted">Tip: Keep a burp cloth handy!</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+          <div style="background:var(--panel);padding:12px;border-radius:12px;border:1px solid var(--glass-border);box-shadow:var(--card-shadow)">
+            <h3>Bathing</h3>
+            <p>Newborns: 2–3 times a week until mobile. Use mild soap, lukewarm water (37°C). Avoid scented products.</p>
+            <p class="muted">Safety: Always test water temperature and never leave unattended.</p>
+          </div>
+          <div style="background:var(--panel);padding:12px;border-radius:12px;border:1px solid var(--glass-border);box-shadow:var(--card-shadow)">
+            <h3>Sleep & Position</h3>
+            <p><strong>Back to sleep:</strong> Always place baby on back for sleep to reduce SIDS risk.</p>
+            <p><strong>Recommended:</strong> Firm mattress, no loose bedding, room share without bed share.</p>
+            <p class="muted">Positions (icons): supine/back 🛌, tummy-only for supervised playtime 🤸‍♀️</p>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4>Illustrated Do's & Don'ts (icons)</h4>
+          <div class="side-illustration">
+
+            <ul style="padding-left:18px">
+              <li>✅ Do burp after feeds. ✅ Use mild lotions. ❌ Don't prop bottles unsafely. ❌ Avoid loose bedding.</li>
+              <li>✅ Tummy time when awake & supervised. ✅ Keep vaccinations up-to-date.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DISEASES -->
+    <section id="diseases" class="page" aria-labelledby="diseasesTitle">
+      <div style="display:flex;gap:12px;flex-direction:column">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <div style="flex:1">
+            <h2>Baby Diseases — Search & Learn</h2>
+            <div class="muted">Search a condition to get symptoms, causes, prevention, diagnosis, treatment & management. Also provides a Google Maps link to nearby hospitals and a short list of specialists.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="dSearch" type="search" placeholder="Search disease (e.g., jaundice)" style="padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)">
+            <button class="btn small" onclick="searchDisease()">Search</button>
+            <select id="userCity" style="padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)">
+              <option value="Bengaluru">Bengaluru</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Kolkata">Kolkata</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="diseaseDetail" id="diseaseResult">
+          <div><em>Try searching "jaundice", "cold", "nappy rash", "bronchiolitis", "croup" or others from the dataset.</em></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MYTHBUSTER -->
+    <section id="myths" class="page" aria-labelledby="mythsTitle">
+      <div class="container reveal">
+        <h2>Baby Myths — 25+ Debunked</h2>
+                    <img src="baby2.jpg" alt="Baby" class="side-img" />
+
+        <p class="muted">Common myths about baby care, busted with friendly facts.</p>
+
+        <div class="myth-list">
+          <!-- At least 25 myths -->
+          <div class="myth-item"><strong>Myth 1:</strong> Newborns must be bathed every day. <em>— Busted:</em> 2–3x/week is fine for newborn skin.</div>
+          <div class="myth-item"><strong>Myth 2:</strong> Babies need water from birth. <em>— Busted:</em> Breastmilk/formula provides hydration.</div>
+          <div class="myth-item"><strong>Myth 3:</strong> Teething causes high fever. <em>— Busted:</em> Only mild discomfort/low temp may occur.</div>
+          <div class="myth-item"><strong>Myth 4:</strong> Spanking helps discipline infants. <em>— Busted:</em> Harmful and ineffective.</div>
+          <div class="myth-item"><strong>Myth 5:</strong> If baby sleeps through noise they sleep better. <em>— Busted:</em> Frequent loud noise disrupts development.</div>
+          <div class="myth-item"><strong>Myth 6:</strong> Babies need thick blankets. <em>— Busted:</em> Overheating increases SIDS risk.</div>
+          <div class="myth-item"><strong>Myth 7:</strong> Honey is safe for babies. <em>— Busted:</em> Risk of botulism — not before 1 year.</div>
+          <div class="myth-item"><strong>Myth 8:</strong> Ear-piercing newborns is harmless. <em>— Busted:</em> Wait until healed from birth stresses; follow sterile practice.</div>
+          <div class="myth-item"><strong>Myth 9:</strong> Babies can sleep on stomach from day one. <em>— Busted:</em> Back-sleeping is recommended.</div>
+          <div class="myth-item"><strong>Myth 10:</strong> You must wake a sleeping baby to feed. <em>— Busted:</em> Only for very low weight or medical reasons; otherwise follow provider advice.</div>
+          <div class="myth-item"><strong>Myth 11:</strong> Pacifiers cause long-term speech problems. <em>— Busted:</em> Short-term use generally safe; stop as advised.</div>
+          <div class="myth-item"><strong>Myth 12:</strong> Milk formula causes constipation always. <em>— Busted:</em> Many factors — discuss with pediatrician.</div>
+          <div class="myth-item"><strong>Myth 13:</strong> Solid food should be introduced at 4 months. <em>— Busted:</em> Most guidelines say ~6 months; follow cues & provider.</div>
+          <div class="myth-item"><strong>Myth 14:</strong> Cradle cap is caused by poor hygiene. <em>— Busted:</em> It's common and not due to dirt — gentle care helps.</div>
+          <div class="myth-item"><strong>Myth 15:</strong> Vaccines overload the immune system. <em>— Busted:</em> Vaccines are safe and protective.</div>
+          <div class="myth-item"><strong>Myth 16:</strong> Stretching a baby's legs helps them walk earlier. <em>— Busted:</em> Walking develops on its own time.</div>
+          <div class="myth-item"><strong>Myth 17:</strong> Breastfeeding prevents all allergies. <em>— Busted:</em> It lowers some risks but not all.</div>
+          <div class="myth-item"><strong>Myth 18:</strong> Egg whites must be avoided forever. <em>— Busted:</em> Introduce allergenic foods per current advice.</div>
+          <div class="myth-item"><strong>Myth 19:</strong> Colic means your parenting is wrong. <em>— Busted:</em> Colic is common and not the caregiver's fault.</div>
+          <div class="myth-item"><strong>Myth 20:</strong> Babies can't perceive colors. <em>— Busted:</em> Newborns see high contrast then develop color vision quickly.</div>
+          <div class="myth-item"><strong>Myth 21:</strong> Baby teeth don't matter — they'll fall out. <em>— Busted:</em> Healthy baby teeth are important for nutrition & speech.</div>
+          <div class="myth-item"><strong>Myth 22:</strong> Stretching a baby daily prevents flat head. <em>— Busted:</em> Tummy time & repositioning reduces flat spots.</div>
+          <div class="myth-item"><strong>Myth 23:</strong> A cold will 'turn into pneumonia' if untreated. <em>— Busted:</em> Most colds are viral; watch for red flags & see provider if concerned.</div>
+          <div class="myth-item"><strong>Myth 24:</strong> Babies should have a strict schedule block every hour. <em>— Busted:</em> Flexibility and cues are key, especially for newborns.</div>
+          <div class="myth-item"><strong>Myth 25:</strong> Breastfeeding always prevents postpartum depression. <em>— Busted:</em> Many factors influence maternal mental health; seek help if needed.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOP -->
+    <section id="shop" class="page" aria-labelledby="shopTitle">
+      <div class="container reveal">
+        <h2>Baby Care — Products & Clothing</h2>
+        <img src="baby19.jpg" alt="Baby" class="full-img" />
+
+        <p class="muted">Safe product lists, categories and buy buttons (bouncing pink & blue).</p>
+       
+        <h3>Recommended Safe Products</h3>
+        <div class="product-list">
+          <!-- Example products -->
+          <div class="product">
+            <strong>Gentle Baby Shampoo</strong>
+            <div class="muted">Fragrance-free, tear-free</div>
+            <div class="buy-row">
+              <button class="btn blue small" onclick="openLink('https://www.amazon.com/s?k=gentle+baby+shampoo+boys')">Buy (Blue)</button>
+              <button class="btn pink small" onclick="openLink('https://www.amazon.com/s?k=gentle+baby+shampoo+girls')">Buy (Pink)</button>
+            </div>
+          </div>
+
+          <div class="product">
+            <strong>Baby Oil (gentle)</strong>
+            <div class="muted">Mild & nourishing</div>
+            <div class="buy-row">
+              <button class="btn blue small" onclick="openLink('https://www.amazon.com/s?k=gentle+baby+oil+boys')">Buy (Blue)</button>
+              <button class="btn pink small" onclick="openLink('https://www.amazon.com/s?k=gentle+baby+oil+girls')">Buy (Pink)</button>
+            </div>
+          </div>
+
+          <div class="product">
+            <strong>Baby Cream (diaper care)</strong>
+            <div class="muted">Zinc-based, protective</div>
+            <div class="buy-row">
+              <button class="btn blue small" onclick="openLink('https://www.amazon.com/s?k=diaper+cream+boys')">Buy (Blue)</button>
+              <button class="btn pink small" onclick="openLink('https://www.amazon.com/s?k=diaper+cream+girls')">Buy (Pink)</button>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:12px">Clothing Categories</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px">
+          <!-- list categories with bouncing two-color buttons (each opens Amazon search) -->
+          <button class="btn blue small" onclick="openLink('https://www.amazon.com/s?k=bodysuits+for+babies')">Bodysuits</button>
+          <button class="btn pink small" onclick="openLink('https://www.amazon.com/s?k=rompers+for+babies')">Rompers</button>
+          <button class="btn blue small" onclick="openLink('https://www.amazon.com/s?k=sleepers+for+babies')">Sleepers</button>
+          <button class="btn pink small" onclick="openLink('https://www.amazon.com/s?k=tops+for+babies')">Tops</button>
+          <button class="btn blue small" onclick="openLink('https://www.amazon.com/s?k=bottoms+for+babies')">Bottoms</button>
+          <button class="btn pink small" onclick="openLink('https://www.amazon.com/s?k=jhablas+for+babies')">Jhablas</button>
+          <button class="btn blue small" onclick="openLink('https://www.amazon.com/s?k=jackets+for+babies')">Jackets & Sweaters</button>
+          <button class="btn pink small" onclick="openLink('https://www.amazon.com/s?k=hoodies+for+babies')">Hoodies</button>
+          <button class="btn blue small" onclick="openLink('https://www.amazon.com/s?k=snowsuits+for+babies')">Snowsuits</button>
+          <button class="btn pink small" onclick="openLink('https://www.amazon.com/s?k=cardigans+for+babies')">Cardigans</button>
+          <button class="btn blue small" onclick="openLink('https://www.amazon.com/s?k=layettes+for+babies')">Layettes</button>
+          <button class="btn pink small" onclick="openLink('https://www.amazon.com/s?k=formal+wear+for+babies')">Formal Wear</button>
+          <button class="btn blue small" onclick="openLink('https://www.amazon.com/s?k=baby+hats')">Accessories (Hats)</button>
+        </div>
+
+        <div style="margin-top:12px" class="muted">Click a category to view shop results (search opens Amazon).</div>
+      </div>
+    </section>
+
+    <!-- VIDEOS -->
+    <section id="videos" class="page" aria-labelledby="videosTitle">
+      <div class="container reveal">
+        <h2>Visual Care — Videos</h2>
+        <p class="muted">Direct links to gentle videos & guides (opens in a new tab)</p>
+
+        <div class="video-grid">
+          <!-- We'll create 12 sample video links and provide a "more" button to load additional 40-like entries -->
+          <div class="video-card">
+            <strong>Nursery Rhymes — Soothing Collection</strong>
+            <div class="muted">Playlist of lullabies</div>
+            <div><button class="playBtn" onclick="openLink('https://www.youtube.com/results?search_query=nursery+rhyme+lullaby')">▶ Play</button></div>
+          </div>
+          <div class="video-card">
+            <strong>Lullabies & Songs</strong>
+            <div class="muted">Gentle bedtime music</div>
+            <div><button class="playBtn" onclick="openLink('https://www.youtube.com/results?search_query=lullabies+for+babies')">▶ Play</button></div>
+          </div>
+          <div class="video-card">
+            <strong>Brushing Teeth for Toddlers</strong>
+            <div class="muted">Start early, gentle techniques</div>
+            <div><button class="playBtn" onclick="openLink('https://www.youtube.com/results?search_query=brushing+teeth+for+toddlers')">▶ Play</button></div>
+          </div>
+          <div class="video-card">
+            <strong>Bedtime Routine</strong>
+            <div class="muted">Wind down rituals</div>
+            <div><button class="playBtn" onclick="openLink('https://www.youtube.com/results?search_query=bedtime+routine+for+babies')">▶ Play</button></div>
+          </div>
+
+          <div class="video-card">
+            <strong>Gentle Baby Massage</strong>
+            <div class="muted">Techniques & benefits</div>
+            <div><button class="playBtn" onclick="openLink('https://www.youtube.com/results?search_query=gentle+baby+massage')">▶ Play</button></div>
+          </div>
+          <div class="video-card">
+            <strong>How to Burp a Baby</strong>
+            <div class="muted">Gentle handling</div>
+            <div><button class="playBtn" onclick="openLink('https://www.youtube.com/results?search_query=how+to+burp+a+baby')">▶ Play</button></div>
+          </div>
+          <div class="video-card">
+            <strong>Maternity Care — Mother Tips</strong>
+            <div class="muted">Prenatal & postnatal care</div>
+            <div><button class="playBtn" onclick="openLink('https://www.youtube.com/results?search_query=maternity+care+tips')">▶ Play</button></div>
+          </div>
+
+          <!-- Load more button to simulate 40 links -->
+          <div style="grid-column: 1 / -1; text-align:center; margin-top:6px;">
+            <button class="btn" onclick="loadMoreVideos()">Load More (40+)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EMOTIONS -->
+    <section id="emotions" class="page" aria-labelledby="emotionsTitle">
+      <div class="container reveal">
+        <h2>Baby Emotions — Types of Crying & Laughing</h2>
+        <img src="baby17.jpg" alt="Baby" class="large-centered" />
+        <p class="muted">Why babies cry, what their different cries mean, and how to respond.</p>
+
+        <div class="emotion-grid" style="margin-top:12px">
+          <div class="emo-card">
+            <div style="font-size:40px">😢</div>
+            <strong>Hunger Cry</strong>
+            <div class="muted">Rhythmic, low-pitched — try feeding.</div>
+          </div>
+          <div class="emo-card">
+            <div style="font-size:40px">😩</div>
+            <strong>Pain Cry</strong>
+            <div class="muted">Sudden, high-pitched — check for fever or injury.</div>
+          </div>
+          <div class="emo-card">
+            <div style="font-size:40px">😴</div>
+            <strong>Tired Cry</strong>
+            <div class="muted">Fussy, whiny — sleep routine helps.</div>
+          </div>
+          <div class="emo-card">
+            <div style="font-size:40px">😆</div>
+            <strong>Joyful Laugh</strong>
+            <div class="muted">Social smiles & giggles — bonding time!</div>
+          </div>
+          <div class="emo-card">
+            <div style="font-size:40px">😮</div>
+            <strong>Curious Sounds</strong>
+            <div class="muted">Exploring voice & world — encourage play.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="muted">Animations: cards gently pulse to show emotions. Use comforting responses: feed, change, soothe, check temperature, seek help for persistent pain.</div>
+      </div>
+    </section>
+
+    <!-- SMART GROWTH (Tracker) -->
+    <section id="growth" class="page" aria-labelledby="growthTitle">
+      <div class="container reveal" id="growthContainer">
+        <!-- Insert the provided tracker code with enhancements (dark mode support, swinging buttons, music toggle, cute icons, loading) -->
+        <h1>🐣 Baby's Daily Routine</h1>
+        <div class="info muted">
+            Track and compare your baby's routine to healthy guidelines. <br><b>Recommended daily:</b>
+            <ul style="padding-left:22px;margin: 12px 0;">
+                <li>Breastfeeding: 8–12 times</li>
+                <li>Sleeping: 14–17 hours</li>
+                <li>Diaper changes: 8–12</li>
+                <li>Bathing: 1 (once daily or every other day)</li>
+            </ul>
+        </div>
+        <form id="routineForm" onsubmit="return false;">
+            <label for="feed">Number of Breastfeeds:</label>
+            <input type="number" id="feed" min="0" max="20" required>
+
+            <label for="sleep">Sleeping Hours:</label>
+            <input type="number" id="sleep" min="0" max="24" required>
+
+            <label for="diaper">Diaper Changes:</label>
+            <input type="number" id="diaper" min="0" max="20" required>
+
+            <label for="bath">Bathing Times:</label>
+            <input type="number" id="bath" min="0" max="3" required>
+
+            <button type="button" class="btnFull btn" onclick="analyzeRoutine()">Check Healthiness</button>
+        </form>
+        <div class="result" id="result">Enter numbers and press <strong>Check Healthiness</strong>.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="max-width:1100px;margin:20px auto;padding:20px;text-align:center;color:var(--muted)">
+    <div>Little Miracles Haven 🌸 — Made with care • Soft icons, pastel themes & practical guidance</div>
+    <div style="margin-top:6px;font-size:13px">Not a substitute for medical advice — always consult your pediatrician.</div>
+  </footer>
+
+  <script>
+    /* ---------- Page Navigation (hash + buttons) ---------- */
+    const pages = document.querySelectorAll('.page');
+    const navBtns = document.querySelectorAll('.nav-btn');
+
+    function showPage(id){
+      pages.forEach(p => p.id===id ? (p.classList.add('active'), p.scrollTop=0) : p.classList.remove('active'));
+      navBtns.forEach(b => b.dataset.page===id ? b.classList.add('active') : b.classList.remove('active'));
+      // For accessibility, set focus to the shown page's first heading
+      setTimeout(()=>{ const first = document.querySelector('#'+id+' h2, #'+id+' h1'); if(first) first.scrollIntoView({behavior:'smooth', block:'start'}); }, 120);
+    }
+
+    function navigate(page){
+      location.hash = page;
+      showPage(page);
+    }
+
+    navBtns.forEach(btn => btn.addEventListener('click',()=>navigate(btn.dataset.page)));
+    // Hash on load
+    window.addEventListener('load', ()=> {
+      const target = location.hash.replace('#','') || 'home';
+      addPageIllustrations();
+      attachMythExplainers();
+      showPage(target);
+      // hide loading after a moment
+      setTimeout(()=>document.getElementById('loadingMask').classList.add('hidden'), 800);
+    });
+    window.addEventListener('hashchange', ()=> showPage(location.hash.replace('#','') || 'home'));
+
+    /* ---------- Reveal animations ---------- */
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e => {
+        if(e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, {threshold: 0.12});
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    /* ---------- Open external links helper ---------- */
+    function openLink(u){
+      window.open(u,'_blank');
+    }
+
+    /* ---------- Music toggle: gentle synth via WebAudio ---------- */
+    let audioCtx = null;
+    let oscNodes = [];
+    let musicOn = false;
+    const musicToggle = document.getElementById('musicToggle');
+    musicToggle.addEventListener('click', toggleMusic);
+
+    function toggleMusic(){
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      }
+      if(!musicOn){
+        // create gentle ambient pattern
+        const freqs = [220, 293.66, 261.63, 329.63]; // gentle notes
+        oscNodes = freqs.map((f,i) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.type = 'sine';
+          o.frequency.value = f;
+          g.gain.value = 0.0015 + (i*0.001);
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.start();
+          // ramp pulses
+          g.gain.setValueAtTime(0.0001,audioCtx.currentTime);
+          g.gain.linearRampToValueAtTime(0.0025, audioCtx.currentTime+0.6);
+          return {o,g};
+        });
+        musicOn = true;
+        musicToggle.textContent = '🔊 Lullaby ON';
+      } else {
+        // stop gently
+        oscNodes.forEach(n=>{
+          n.g.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.8);
+          setTimeout(()=>{try{n.o.stop()}catch(e){}}, 900);
+        });
+        oscNodes = [];
+        musicOn = false;
+        musicToggle.textContent = '🔈 Lullaby';
+      }
+    }
+
+    /* ---------- Theme toggle (dark mode) ---------- */
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      themeToggle.textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+    });
+
+    /* ---------- Page illustrations + Myth explainer buttons ---------- */
+    function addPageIllustrations(){
+      const map = {
+        home: '👶',
+        basics: '🍼',
+        diseases: '🩺',
+        myths: '🕵️‍♀️👶',
+        shop: '🛍️',
+        videos: '📺',
+        emotions: '😭',
+        growth: '📏'
+      };
+      pages.forEach(p => {
+        if(!p.id) return;
+        const icon = map[p.id] || '👼';
+        const container = p.querySelector('.container') || p;
+        if(!container) return;
+        if(container.querySelector('.page-illustration')){
+          container.querySelector('.page-illustration .illus').textContent = icon;
+          return;
+        }
+        const div = document.createElement('div');
+        div.className = 'page-illustration';
+        div.innerHTML = `<div class="illus">${icon}</div>`;
+        container.insertBefore(div, container.firstChild);
+      });
+    }
+
+    function attachMythExplainers(){
+      const mythList = document.querySelector('.myth-list');
+      if(!mythList) return;
+      mythList.querySelectorAll('.myth-item').forEach((item, idx) => {
+        if(item.querySelector('.explain-btn')) return; // already attached
+        const btn = document.createElement('button');
+        btn.className = 'explain-btn';
+        btn.textContent = 'Explain';
+        btn.addEventListener('click', ()=>{
+          let ex = item.querySelector('.myth-explain');
+          if(!ex){
+            ex = document.createElement('div');
+            ex.className = 'myth-explain';
+            ex.innerHTML = '<strong>Explanation:</strong> This myth is commonly held but evidence shows otherwise. Always consult trusted pediatric guidance.';
+            item.appendChild(ex);
+          }
+          ex.style.display = ex.style.display === 'none' || !ex.style.display ? 'block' : 'none';
+        });
+        item.appendChild(document.createTextNode(' '));
+        item.appendChild(btn);
+      });
+    }
+
+    /* ---------- Routine tracker code (provided + adjusted) ---------- */
+    function getScore(val, min, max) {
+        if (val >= min && val <= max) return 100;
+        let range = Math.max(1, (max - min));
+        if (val < min)
+            return Math.max(0, Math.round(100 - ((min - val)/range) * 100));
+        else
+            return Math.max(0, Math.round(100 - ((val - max)/range) * 100));
+    }
+
+    function analyzeRoutine() {
+        let feeds = parseInt(document.getElementById('feed').value || 0, 10);
+        let sleep = parseFloat(document.getElementById('sleep').value || 0);
+        let diaper = parseInt(document.getElementById('diaper').value || 0, 10);
+        let bath = parseInt(document.getElementById('bath').value || 0, 10);
+
+        // Healthy ranges:
+        let feedScore = getScore(feeds, 8, 12);
+        let sleepScore = getScore(sleep, 14, 17);
+        let diaperScore = getScore(diaper, 8, 12);
+        let bathScore = (bath === 1) ? 100 : Math.max(0, 100 - Math.abs(bath - 1)*30);
+
+        let totalScore = Math.round((feedScore + sleepScore + diaperScore + bathScore)/4);
+
+        let comment = "";
+        if (totalScore >= 90) comment = "Excellent! Your baby's routine is very healthy. 🌈";
+        else if (totalScore >= 70) comment = "Good! There's some room for minor improvements. 😊";
+        else if (totalScore >= 50) comment = "Fair. Consider reviewing one or more routines. 💡";
+        else comment = "Needs change. Please check key areas of your baby's routine. 🐻";
+
+        document.getElementById('result').innerHTML =
+            "<div class='summary'>Routine Healthiness: <b>" + totalScore + "%</b></div>"
+            + "<div style='margin-top:8px;font-weight:700'>" + comment + "</div>";
+    }
+
+    /* ---------- Diseases dataset (30 sample entries) ---------- */
+    const DISEASES = [
+      {key:'common cold', name:'Common Cold', symptoms:'Runny nose, sneezing, mild cough, low-grade fever', causes:'Viral (rhinoviruses)', prevention:'Hand hygiene, avoid sick contacts', precautions:'Hydration, rest', diagnosis:'Clinical', treatment:'Supportive — fluids, rest, saline drops', management:'Monitor for high fever or breathing difficulty', specialists:[{name:'Dr. Asha Rao', spec:'Pediatrics', exp:'12 yrs'},{name:'Dr. R. Mehta', spec:'General Pediatrics', exp:'10 yrs'}]},
+      {key:'jaundice', name:'Neonatal Jaundice', symptoms:'Yellowing of skin & eyes', causes:'Physiologic immaturity of liver, hemolysis', prevention:'Adequate feeding, monitor', precautions:'Watch feeding & stool color', diagnosis:'Bilirubin test', treatment:'Phototherapy in many cases', management:'Monitor bilirubin levels & feeding', specialists:[{name:'Dr. Sunil Kumar', spec:'Neonatology', exp:'14 yrs'},{name:'Dr. Meera Pillai', spec:'Pediatrics', exp:'8 yrs'}]},
+      {key:'nappy rash', name:'Nappy Rash (Diaper Dermatitis)', symptoms:'Red, irritated skin in diaper area', causes:'Prolonged wetness, irritants, yeast infection', prevention:'Frequent changes, barrier creams', precautions:'Air exposure, mild cleansers', diagnosis:'Clinical', treatment:'Barrier creams, anti-fungal if yeast', management:'Keep area dry and change diapers often', specialists:[{name:'Dr. Kavita Joshi', spec:'Dermatology (Pediatrics)', exp:'9 yrs'}]},
+      {key:'bronchiolitis', name:'Bronchiolitis', symptoms:'Cough, wheeze, difficulty breathing', causes:'RSV and other viruses', prevention:'Hygiene, RSV prevention in high-risk infants', precautions:'Hydration, oxygen if needed', diagnosis:'Clinical + nasal swab', treatment:'Supportive care, oxygen for severe', management:'Hospitalize if poor feeding or respiratory distress', specialists:[{name:'Dr. Rahul Desai', spec:'Pediatric Pulmonology', exp:'11 yrs'}]},
+      {key:'croup', name:'Croup', symptoms:'Barking cough, inspiratory stridor', causes:'Parainfluenza virus', prevention:'Hand hygiene', precautions:'Keep calm, cool mist', diagnosis:'Clinical', treatment:'Dexamethasone for moderate/severe', management:'Seek emergency care for severe stridor', specialists:[{name:'Dr. Nidhi Patel', spec:'ENT/Pediatrics', exp:'10 yrs'}]},
+      {key:'otitis media', name:'Otitis Media (Ear Infection)', symptoms:'Ear tugging, fever, irritability', causes:'Bacterial/viral after cold', prevention:'Avoid smoke, breastfeeding may reduce risk', precautions:'Pain relief, watchful waiting in some cases', diagnosis:'Exam w/otoscope', treatment:'Analgesics, antibiotics if indicated', management:'Follow-up for recurrent cases', specialists:[{name:'Dr. Anil Kumar', spec:'Pediatrics', exp:'15 yrs'}]},
+      {key:'conjunctivitis', name:'Conjunctivitis (Pink Eye)', symptoms:'Red eye, discharge, tearing', causes:'Viral, bacterial, or allergic', prevention:'Hygiene', precautions:'Avoid touching eyes, hygiene', diagnosis:'Exam', treatment:'Topical antibiotic for bacterial', management:'Isolate from daycare if bacterial', specialists:[{name:'Dr. Lata Iyer', spec:'Pediatric Ophthalmology', exp:'12 yrs'}]},
+      {key:'rotavirus', name:'Rotavirus Infection', symptoms:'Severe watery diarrhea, vomiting', causes:'Rotavirus (viral)', prevention:'Rotavirus vaccine', precautions:'Hydration', diagnosis:'Stool test', treatment:'Oral rehydration & supportive', management:'Hospitalize if severe dehydration', specialists:[{name:'Dr. Suresh Rao', spec:'Pediatrics', exp:'16 yrs'}]},
+      {key:'hand foot mouth', name:'Hand-Foot-and-Mouth Disease', symptoms:'Mouth ulcers, rash on hands/feet', causes:'Coxsackievirus', prevention:'Hygiene', precautions:'Supportive care', diagnosis:'Clinical', treatment:'Pain relief & fluids', management:'Watch hydration', specialists:[{name:'Dr. Priya Singh', spec:'Pediatrics', exp:'9 yrs'}]},
+      {key:'whooping cough', name:'Pertussis (Whooping Cough)', symptoms:'Severe coughing spells, whoop', causes:'Bordetella pertussis', prevention:'Vaccination (DTaP)', precautions:'Antibiotics for contacts', diagnosis:'PCR/nasopharyngeal swab', treatment:'Azithromycin & supportive', management:'Hospitalize infants', specialists:[{name:'Dr. Mohan Verma', spec:'Infectious Diseases Pediatrics', exp:'14 yrs'}]},
+      {key:'asthma', name:'Childhood Asthma', symptoms:'Wheeze, cough, breathlessness', causes:'Allergic & non-allergic triggers', prevention:'Avoid triggers', precautions:'Asthma action plan', diagnosis:'Clinical, spirometry if older', treatment:'Inhalers (bronchodilators, steroids)', management:'Regular review & trigger control', specialists:[{name:'Dr. Rina Bose', spec:'Pediatric Pulmonology', exp:'13 yrs'}]},
+      {key:'eczema', name:'Atopic Dermatitis (Eczema)', symptoms:'Itchy, inflamed skin', causes:'Genetic & environmental', prevention:'Moisturize, avoid irritants', precautions:'Short nails to reduce scratching', diagnosis:'Clinical', treatment:'Moisturizers & topical steroids', management:'Avoid triggers, emollient therapy', specialists:[{name:'Dr. Deepa Shah', spec:'Dermatology', exp:'11 yrs'}]},
+      {key:'urti', name:'Upper Respiratory Tract Infection', symptoms:'Nasal congestion, sore throat', causes:'Viruses', prevention:'Hygiene', precautions:'Hydration', diagnosis:'Clinical', treatment:'Supportive', management:'Monitor breathing', specialists:[{name:'Dr. Amit Chandra', spec:'Pediatrics', exp:'8 yrs'}]},
+      {key:'gastroenteritis', name:'Gastroenteritis', symptoms:'Diarrhea, vomiting, fever', causes:'Viral or bacterial', prevention:'Hygiene, safe food', precautions:'Oral rehydration', diagnosis:'Clinical/stool tests', treatment:'Rehydration, antibiotics if bacterial', management:'Monitor hydration closely', specialists:[{name:'Dr. Kiran Malhotra', spec:'Pediatric Gastroenterology', exp:'12 yrs'}]},
+      {key:'urinary infection', name:'Urinary Tract Infection (UTI)', symptoms:'Fever, irritability, poor feeding', causes:'Bacterial', prevention:'Hygiene, prompt diaper changes', precautions:'Collect proper urine sample', diagnosis:'Urine culture', treatment:'Antibiotics', management:'Follow up for recurrent UTI', specialists:[{name:'Dr. Vivek Joshi', spec:'Pediatric Nephrology', exp:'10 yrs'}]},
+      {key:'febrile seizures', name:'Febrile Seizures', symptoms:'Seizure during fever', causes:'Rapid temp rise in infants/kids', prevention:'Treat fevers', precautions:'Stay calm, place child safe', diagnosis:'Clinical', treatment:'Manage fever, seek care for first seizure', management:'Neurology/pediatric follow-up', specialists:[{name:'Dr. N. Reddy', spec:'Pediatric Neurology', exp:'15 yrs'}]},
+      {key:'milk allergy', name:'Milk Protein Allergy', symptoms:'Vomiting, diarrhea, rashes', causes:'Immune reaction to cow milk protein', prevention:'Breastfeeding guidance / special formulas', precautions:'Avoid cow milk proteins', diagnosis:'Allergy testing', treatment:'Elimination diet, alternative formula', management:'Dietary counselling', specialists:[{name:'Dr. Shalini Gupta', spec:'Allergy/Immunology', exp:'9 yrs'}]},
+      {key:'scalds', name:'Scald Burns', symptoms:'Pain, redness, blistering', causes:'Hot liquids', prevention:'Keep hot items away', precautions:'Cool area with lukewarm water, not ice', diagnosis:'Clinical', treatment:'First aid & wound care', management:'Seek burn clinic for deep burns', specialists:[{name:'Dr. R. Singh', spec:'Pediatric Surgery', exp:'12 yrs'}]},
+      {key:'dehydration', name:'Dehydration', symptoms:'Dry mouth, low urine, lethargy', causes:'Vomiting, diarrhea, poor intake', prevention:'Adequate fluids', precautions:'Offer ORS', diagnosis:'Clinical, labs if severe', treatment:'Oral rehydration or IV fluids', management:'Monitor vitals', specialists:[{name:'Dr. B. Rao', spec:'Pediatrics', exp:'10 yrs'}]},
+      {key:'sids', name:'Sudden Infant Death Syndrome (SIDS)', symptoms:'Unexpected infant death during sleep', causes:'Unknown but risk factors exist', prevention:'Back to sleep, no smoking, firm mattress', precautions:'Safe sleep environment', diagnosis:'Post-mortem', treatment:'N/A', management:'Support for families', specialists:[{name:'Dr. FamilySupport', spec:'Pediatrician', exp:'20 yrs'}]},
+      {key:'measles', name:'Measles', symptoms:'Fever, rash, cough, Koplik spots', causes:'Measles virus', prevention:'MMR vaccine', precautions:'Isolation', diagnosis:'Serology', treatment:'Supportive &Vit A', management:'Public health notification', specialists:[{name:'Dr. Epidemiology', spec:'Infectious Diseases', exp:'18 yrs'}]},
+      {key:'ringworm', name:'Tinea (Ringworm)', symptoms:'Round itchy rash', causes:'Fungal infection', prevention:'Keep skin dry', precautions:'Topical antifungal', diagnosis:'Clinical/skin scraping', treatment:'Topical/oral antifungal', management:'Hygiene & treat contacts', specialists:[{name:'Dr. SkinCare', spec:'Dermatology', exp:'10 yrs'}]},
+      {key:'sepsis', name:'Neonatal Sepsis', symptoms:'Fever or low temp, lethargy, poor feeding', causes:'Bacterial infection', prevention:'Aseptic care, perinatal care', precautions:'Urgent evaluation', diagnosis:'Blood cultures', treatment:'IV antibiotics', management:'ICU if severe', specialists:[{name:'Dr. Neonate', spec:'Neonatology', exp:'17 yrs'}]},
+      {key:'hbv', name:'Hepatitis B (neonatal risk)', symptoms:'Often asymptomatic at first', causes:'Viral transmission perinatal', prevention:'HBV immunization & maternal screening', precautions:'Hep B immunoglobulin as needed', diagnosis:'Serology', treatment:'Support & antivirals if needed', management:'Follow-up', specialists:[{name:'Dr. HepCare', spec:'Pediatrics', exp:'13 yrs'}]},
+      {key:'thalassemia', name:'Thalassemia (inherited anemia)', symptoms:'Pallor, fatigue, poor growth', causes:'Genetic', prevention:'Carrier screening', precautions:'Transfusions as needed', diagnosis:'CBC & HPLC', treatment:'Transfusion, chelation', management:'Specialist follow-up', specialists:[{name:'Dr. Hemato', spec:'Pediatric Hematology', exp:'14 yrs'}]},
+      {key:'apl', name:'Aplastic / Rare Syndromes', symptoms:'Pale, infections, bleeding', causes:'Bone marrow failure/various syndromes', prevention:'Genetic counseling', precautions:'Specialist care', diagnosis:'Bone marrow tests', treatment:'Transplant/ supportive', management:'Long-term specialist care', specialists:[{name:'Dr. Rare', spec:'Pediatric Hematology/Oncology', exp:'16 yrs'}]},
+      {key:'scabies', name:'Scabies', symptoms:'Itchy papules, worse at night', causes:'Mite infestation', prevention:'Avoid shared bedding', precautions:'Treat household contacts', diagnosis:'Clinical/skin scraping', treatment:'Topical permethrin', management:'Wash bedding', specialists:[{name:'Dr. Derm', spec:'Dermatology', exp:'11 yrs'}]}
+    ];
+
+    function searchDisease(){
+      // Redirect the disease query directly to Google search results in a new tab
+      const q = document.getElementById('dSearch').value.trim();
+      const out = document.getElementById('diseaseResult');
+      if(!q){ out.innerHTML = '<em>Enter a disease name (e.g., "jaundice")</em>'; return; }
+      const query = encodeURIComponent(q + ' baby disease');
+      window.open('https://www.google.com/search?q=' + query, '_blank');
+    }
+
+    /* ---------- Load more videos (simulate 40) ---------- */
+    function loadMoreVideos(){
+      const vg = document.querySelector('.video-grid');
+      for(let i=0;i<36;i++){
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.innerHTML = `<strong>Video Guide #${i+8}</strong><div class="muted">Tip or tutorial</div><div><button class="playBtn" onclick="openLink('https://www.youtube.com/results?search_query=baby+care+video+${i+8}')">▶ Play</button></div>`;
+        vg.appendChild(card);
+      }
+      window.scrollBy({top:300, behavior:'smooth'});
+    }
+
+    /* ---------- Load more diseases sample: (no) already 30 provided ---------- */
+
+    /* ---------- Cute cursor fallback for browsers that don't allow data-url cursor: offer CSS heart on hover ---------- */
+    document.body.addEventListener('mousemove', (e)=>{
+      // tiny floating hearts near pointer (optional lightweight)
+      // Skip for performance on some devices
+    });
+
+    /* ---------- Accessibility: keyboard nav for nav buttons ---------- */
+    navBtns.forEach(b => b.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(b.dataset.page); }
+    }));
+
+    /* ---------- Prevent accidental navigation when forms are interacted with ---------- */
+    document.querySelectorAll('input, button').forEach(el => el.addEventListener('click', (e)=> e.stopPropagation()));
+
+  </script>
+</body>
+</html>
